@@ -69,7 +69,6 @@ Manually enter the following values per process:
 
 ## Notes
 
-- This project is structured for readability and easy grading.
+- This project is structured for readability.
 - The codebase is fully commented in English.
-- Output is presented in Korean to match the original context.
-- Designed for academic use and process scheduling demonstration.
+- Output is presented in Korean.
