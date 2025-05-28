@@ -21,15 +21,15 @@ This program simulates various CPU scheduling algorithms with support for I/O op
 ```
 .
 ├── main.c                         # Program entry point
-├── process.c / process.h         # Process creation and printing
-├── queue.c / queue.h             # Queue operations
-├── fcfs_with_io.c / .h           # FCFS algorithm with I/O
-├── sjf_non_preemptive.c / .h     # SJF non-preemptive implementation
-├── sjf_preemptive.c / .h         # SJF preemptive implementation
-├── priority_non_preemptive.c / .h# Priority scheduling non-preemptive
-├── priority_preemptive.c / .h    # Priority scheduling preemptive
-├── round_robin.c / .h            # Round Robin algorithm
-├── scheduler.h                   # Shared function declarations
+├── process.c / process.h          # Process creation and printing
+├── queue.c / queue.h              # Queue operations
+├── fcfs_with_io.c / .h            # FCFS algorithm with I/O
+├── sjf_non_preemptive.c / .h      # SJF non-preemptive implementation
+├── sjf_preemptive.c / .h          # SJF preemptive implementation
+├── priority_non_preemptive.c / .h # Priority scheduling non-preemptive
+├── priority_preemptive.c / .h     # Priority scheduling preemptive
+├── round_robin.c / .h             # Round Robin algorithm
+├── scheduler.h                    # Shared function declarations
 ```
 
 ## How to Compile
