@@ -2,18 +2,16 @@
 #include "scheduler.h"
 
 // Non-preemptive Priority Scheduling
-// Among the processes that have arrived, selects the one with the highest priority (lowest number)
-// and runs it to completion before checking again for the next.
 void priority_non_preemptive(Process processes[], int count) {
-    int current_time = 0;         // Simulation time
-    int completed = 0;            // Number of completed processes
-    int step = 0;                 // Step counter for Gantt chart
-    int inserted[100] = {0};      // Tracks which processes have been scheduled
+    int current_time = 0;
+    int completed = 0;
+    int step = 0;
+    int inserted[100] = {0};
 
-    Process* gantt[500];          // Gantt chart process timeline
-    int timeline[500];            // Corresponding time markers
+    Process* gantt[500];
+    int timeline[500];
 
-    printf("\n=== Priority Scheduling (Non-Preemptive) 결과 ===\n");
+    printf("\n=== Non-Preemptive Priority Scheduling Results ===\n");
 
     // Repeat until all processes are completed
     while (completed < count) {
@@ -74,7 +72,7 @@ void priority_non_preemptive(Process processes[], int count) {
            (float)total_wt / count, (float)total_tt / count);
 
     // Draw Gantt Chart for execution order
-    printf("\nGantt Chart:\n ");
+    printf("\nNon-Preemptive Priority Gantt Chart:\n ");
     for (int i = 0; i < step; i++) {
         printf("| P%d ", gantt[i]->pid);
     }
