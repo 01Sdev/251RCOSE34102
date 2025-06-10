@@ -1,8 +1,7 @@
-// === sjf_non_preemptive.c ===
 #include <stdio.h>
 #include "scheduler.h"
 
-// Implements the Shortest Job First (Non-Preemptive) Scheduling Algorithm
+// Implements the Non-Preemptive SJF Scheduling Algorithm
 void sjf_non_preemptive(Process processes[], int count) {
     int completed = 0, current_time = 0;
     int inserted[100] = {0};
@@ -59,9 +58,9 @@ void sjf_non_preemptive(Process processes[], int count) {
                processes[i].completion_time);
     }
 
-    // Print Gantt chart
+    // Gantt chart
     if (step > 0) {
-        printf("\nGantt Chart:\n ");
+        printf("\n Non-Preemptive SJF Gantt Chart:\n ");
         for (int i = 0; i < step; i++) {
             printf("| P%d ", gantt[i]->pid);
         }
@@ -74,7 +73,7 @@ void sjf_non_preemptive(Process processes[], int count) {
         printf("   %2d\n", current_time);
     }
 
-    // Print averages
+    // Average
     int total_wt = 0, total_tt = 0;
     for (int i = 0; i < count; i++) {
         total_wt += processes[i].waiting_time;
