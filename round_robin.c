@@ -1,4 +1,3 @@
-// === round_robin.c ===
 #include <stdio.h>
 #include "scheduler.h"
 #include "queue.h"
@@ -7,9 +6,8 @@
 
 // Implements the Round Robin Scheduling Algorithm
 void round_robin(Process processes[], int count, int tq) {
-    Queue ready_queue, waiting_queue;
+    Queue ready_queue;
     init_queue(&ready_queue);
-    init_queue(&waiting_queue);
 
     int current_time = 0;
     int completed = 0;
@@ -29,57 +27,48 @@ void round_robin(Process processes[], int count, int tq) {
             }
         }
 
-        // Process I/O completion
-        int wq_size = waiting_queue.size;
-        for (int i = 0; i < wq_size; i++) {
-            Process* p = dequeue(&waiting_queue);
-            if (p == NULL) continue;
-
-            p->io_remaining_time--;
-            if (p->io_remaining_time <= 0) {
-                p->io_done = 1;
-                enqueue(&ready_queue, p);
-            } else {
-                enqueue(&waiting_queue, p);
-            }
-        }
-
         if (is_empty(&ready_queue)) {
+            // CPU is idle, skip time
             current_time++;
             continue;
         }
 
-        Process* p = dequeue(&ready_queue);
-        int burst = (p->remaining_time < tq) ? p->remaining_time : tq;
+        Process* current = dequeue(&ready_queue);
+        int burst = (current->remaining_time < tq) ? current->remaining_time : tq;
+        int finished_early = 0;
 
-        for (int i = 0; i < burst; i++) {
-            // I/O check during execution
-            if (p->has_io && p->io_done == 0 && (p->cpu_burst - p->remaining_time) == p->io_start_time) {
-                printf("  \u2192 I/O request: Process %d (Remaining CPU=%d)\n", p->pid, p->remaining_time);
-                p->io_remaining_time = p->io_burst;
-                enqueue(&waiting_queue, p);
-                current_time++;
-                goto end_of_loop;
-            }
-
-            gantt[step] = p;
+        // ✅ Record in Gantt Chart ONLY when switching to a new process
+        if (step == 0 || gantt[step - 1] != current) {
+            gantt[step] = current;
             timeline[step] = current_time;
             step++;
-            p->remaining_time--;
+        }
+
+        for (int i = 0; i < burst; i++) {
+            current->remaining_time--;
             current_time++;
 
-            // Process completion
-            if (p->remaining_time == 0) {
-                p->completion_time = current_time;
-                p->turnaround_time = p->completion_time - p->arrival_time;
-                p->waiting_time = p->turnaround_time - p->cpu_burst;
+            // Check for newly arrived processes during burst
+            for (int j = 0; j < count; j++) {
+                if (!inserted[j] && processes[j].arrival_time <= current_time) {
+                    enqueue(&ready_queue, &processes[j]);
+                    inserted[j] = 1;
+                }
+            }
+
+            if (current->remaining_time == 0) {
+                current->completion_time = current_time;
+                current->turnaround_time = current->completion_time - current->arrival_time;
+                current->waiting_time = current->turnaround_time - current->cpu_burst;
                 completed++;
-                goto end_of_loop;
+                finished_early = 1;
+                break;
             }
         }
 
-        enqueue(&ready_queue, p);  // Time quantum expired; re-enqueue
-end_of_loop:;
+        if (!finished_early) {
+            enqueue(&ready_queue, current);
+        }
     }
 
     // Display results
@@ -91,9 +80,9 @@ end_of_loop:;
                processes[i].completion_time);
     }
 
-    // Display Gantt chart
+    // Gantt Chart (FCFS-style)
     if (step > 0) {
-        printf("\nGantt Chart:\n ");
+        printf("\nRound Robin Gantt Chart:\n ");
         for (int i = 0; i < step; i++) {
             printf("| P%d ", gantt[i]->pid);
         }
