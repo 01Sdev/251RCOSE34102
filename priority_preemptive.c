@@ -4,20 +4,17 @@
 
 #define MAX_STEPS 1000
 
-// Priority Scheduling (Preemptive)
-// Processes are scheduled based on priority (lower number = higher priority).
-// At each time unit, the scheduler checks for the process with the highest priority
-// among the ready processes and runs it for 1 unit (preemption possible).
+// Preemptive Priority Scheduling Algorithm
 void priority_preemptive(Process processes[], int count) {
     Queue ready_queue;
-    init_queue(&ready_queue); // Initialize the ready queue
+    init_queue(&ready_queue);
 
-    int current_time = 0;         // Current simulation time
-    int completed = 0;            // Number of completed processes
-    int inserted[100] = {0};      // Tracks which processes have been inserted
-    Process* gantt[MAX_STEPS];    // Stores the order of process execution for Gantt chart
-    int timeline[MAX_STEPS];      // Stores timestamps for Gantt chart
-    int step = 0;                 // Step counter for Gantt chart
+    int current_time = 0;
+    int completed = 0;
+    int inserted[100] = {0};
+    Process* raw_gantt[MAX_STEPS];
+    int raw_timeline[MAX_STEPS];
+    int step = 0;
 
     printf("\n=== Priority Scheduling (Preemptive) 결과 ===\n");
 
@@ -51,8 +48,8 @@ void priority_preemptive(Process processes[], int count) {
         }
 
         // Record the currently selected process for the Gantt chart
-        gantt[step] = current;
-        timeline[step] = current_time;
+        raw_gantt[step] = current;
+        raw_timeline[step] = current_time;
         step++;
 
         // Simulate 1 unit of execution time
@@ -89,15 +86,31 @@ void priority_preemptive(Process processes[], int count) {
 
     // Print Gantt chart to visualize execution timeline
     if (step > 0) {
-        printf("\nGantt Chart:\n ");
-        for (int i = 0; i < step; i++) {
-            printf("| P%d ", gantt[i]->pid);
+        printf("\n Preemptive Priority Gantt Chart:\n ");
+
+        // Print process IDs with compression
+        printf(" ");
+        int prev_pid = raw_gantt[0]->pid;
+        printf("| P%d ", prev_pid);
+
+        for (int i = 1; i < step; i++) {
+            if (raw_gantt[i]->pid != prev_pid) {
+                printf("| P%d ", raw_gantt[i]->pid);
+                prev_pid = raw_gantt[i]->pid;
+            }
         }
         printf("|\n");
 
-        printf("%d", timeline[0]);
+        // Print time markers
+        int time_marker = raw_timeline[0];
+        printf("%2d", time_marker);
+        prev_pid = raw_gantt[0]->pid;
+
         for (int i = 1; i < step; i++) {
-            printf("   %2d", timeline[i]);
+            if (raw_gantt[i]->pid != prev_pid) {
+                printf("   %2d", raw_timeline[i]);
+                prev_pid = raw_gantt[i]->pid;
+            }
         }
         printf("   %2d\n", current_time);
     }
